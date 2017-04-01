@@ -1,0 +1,205 @@
+package ellipsis.energy.grid;
+
+import java.util.Random;
+
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.complex.ComplexUtils;
+
+import ellipsis.energy.grid.res.SolarPanel;
+import ellipsis.energy.smartgrid.ControllableDemand;
+
+public class GridGenerator
+{
+	public double slackVoltage = 4160; // V
+	
+	public int maxLineCountFromSlack = 8;
+	public int minLineCountFromSlack = 4;
+	public int maxLineCount = 3;
+	public int maxBusDepth = 6;
+	public int minBusDepth = 1;
+	
+	public double minLineResistance = 0.06;
+	public double maxLineResistance = 0.06;
+	public double minLineInductance = 0.03;
+	public double maxLineInductance = 0.03;
+	public double minLineLength = 1; // km
+	public double maxLineLength = 5; // km
+	
+	public double loadDensity = 0.9; // Probability of having a load on a bus
+	public int maxLoadsPerBus = 1; // Loads per bus
+	public int minLoadsPerBus = 1; // Loads per bus
+	public double maxInitialLoad = 1000; // VA
+	public double minInitialLoad = 100; // VA
+	public double maxInitialLoadArg = 0.32; // radians
+	public double minInitialLoadArg = 0; // radians
+	
+	public double pvDensity = 0.25; // Probability of having a PV on a bus
+	public int maxPvPerBus = 1; // PVs per bus
+	public int minPvPerBus = 1; // PVs per bus
+	public double maxPvCapacity = 30e3; // VA
+	public double minPvCapacity = 1500; // VA
+	public double minPvCurrentToIrradianceRatio = 0.0075; // A/(W/m^2)
+	public double maxPvCurrentToIrradianceRatio = 0.0075; // A/(W/m^2)
+	public double minPvVoltage = 24; // V
+	public double maxPvVoltage = 24; // V
+	public double minPvUnitCount = 1000;
+	public double maxPvUnitCount = 12000;
+	public double initialIrradiance = 1000; // W/m^2
+	
+	public double storageDensity = 0.25; // Probability of having storage on a bus
+	public int maxStoragePerBus = 1; // Storage units per bus
+	public int minStoragePerBus = 1; // Storage units per bus
+	public int maxStorageTotal = Integer.MAX_VALUE;
+	public double maxStorageCapacity = 50000; // Wh
+	public double minStorageCapacity = 2000; // Wh
+	public double initialStorageCapacityPercent = 0.5; // [0,1]
+	public double maxStorageChargeRate = 2000; // W
+	public double minStorageChargeRate = 1000; // W
+	
+	private int busCounter = 1;
+	private int storageCounter = 0;
+	
+	public Grid createGrid(String name)
+	{
+		return createGrid(name, 0);
+	}
+	
+	public Grid createGrid(String name, int seed)
+	{
+		busCounter = 1;
+		Random rand = new Random(seed);
+		
+		// Grid:
+		Grid grid = new Grid();
+		grid.setName(name);
+		
+		// Start with the slack bus and bus 1:
+		Bus slackBus = new Bus(grid);
+		slackBus.setName("Slack Bus");
+		SlackSource slack = new SlackSource();
+		slack.setVoltage(new Complex(slackVoltage, 0));
+		slack.setName("Slack");
+		slackBus.addChild(slack);
+		grid.add(slackBus);
+		
+		Bus bus1 = createBus(grid, rand);
+		Line line = new Line();
+		line.setName(slackBus.getName()+"-"+bus1.getName());
+		line.setFromBus(slackBus);
+		line.setToBus(bus1);
+		line.setResistancePerMetre(rand(rand, minLineResistance, maxLineResistance));
+		line.setInductancePerMetre(rand(rand, minLineInductance, maxLineInductance));
+		line.setLength(rand(rand, minLineLength, maxLineLength));
+		grid.add(bus1);
+		
+		// Create the tree of busses and lines:
+		createBusTree(grid, bus1, rand, 1);
+		
+		return grid;
+	}
+
+	private void createBusTree(Grid grid, Bus fromBus, Random rand, int depth)
+	{
+		if(depth > maxBusDepth)
+			return;
+		
+		int minLineCount = 
+				depth == 1 ? minLineCountFromSlack :
+				depth < minBusDepth ? 1 : 
+				0;
+		int max = depth == 1 ? maxLineCountFromSlack : maxLineCount;
+		int childCount = (int)(minLineCount + rand.nextDouble()*(max-minLineCount));
+		for(int i = 0; i < childCount; ++i)
+		{
+			// Next bus:
+			Bus toBus = createBus(grid, rand);
+			
+			// Line:
+			Line line = new Line();
+			line.setName(fromBus.getName()+"-"+toBus.getName());
+			line.setFromBus(fromBus);
+			line.setToBus(toBus);
+			line.setResistancePerMetre(rand(rand, minLineResistance, maxLineResistance));
+			line.setInductancePerMetre(rand(rand, minLineInductance, maxLineInductance));
+			line.setLength(rand(rand, minLineLength, maxLineLength));
+			
+			fromBus.addChild(line);
+			
+			createBusTree(grid, toBus, rand, depth+1);
+		}
+	}
+
+	protected Bus createBus(Grid grid, Random rand)
+	{
+		Bus bus = new Bus(grid);
+		bus.setName("Bus"+busCounter);
+		++busCounter;
+		
+		// Load:
+		if(rand.nextDouble() < loadDensity)
+		{
+			int count = (int)rand(rand, minLoadsPerBus, maxLoadsPerBus);
+			for(int i = 0; i < count; ++i)
+			{
+				Load load = new Load();
+				load.setName("Load-"+bus.getName()+"-"+(i+1));
+				
+				double magnitude = rand(rand, minInitialLoad, maxInitialLoad);
+				double arg = rand(rand, minInitialLoadArg, maxInitialLoadArg);
+				load.setLoad(ComplexUtils.polar2Complex(magnitude, arg));
+				bus.addChild(load);
+			}
+		}
+		
+		// PV:
+		if(rand.nextDouble() < pvDensity)
+		{
+			int count = (int)(minPvPerBus + rand.nextDouble()*(maxPvPerBus-minPvPerBus));
+			for(int i = 0; i < count; ++i)
+			{
+				SolarPanel pv = new SolarPanel();
+				pv.setName("PV-"+bus.getName()+"-"+(i+1));
+				
+				pv.setCurrentToIrradianceRatio(rand(rand, minPvCurrentToIrradianceRatio, maxPvCurrentToIrradianceRatio));
+				pv.setIrradiance(initialIrradiance);
+				pv.setPmax(rand(rand, minPvCapacity, maxPvCapacity));
+				pv.setVoltage(rand(rand, minPvVoltage, maxPvVoltage));
+				pv.setPvUnitCount(rand(rand, minPvUnitCount, maxPvUnitCount));
+				
+				bus.addChild(pv);
+			}
+		}
+		
+		// Storage:
+		if(rand.nextDouble() < storageDensity)
+		{
+			int count = (int)(rand(rand, minStoragePerBus, maxStoragePerBus));
+			for(int i = 0; i < count; ++i)
+			{
+				if(storageCounter >= maxStorageTotal)
+					break;
+				
+				ControllableDemand bat = new ControllableDemand();
+				bat.setName("Storage-"+bus.getName()+"-"+(i+1));
+				
+				double capacity = rand(rand, minStorageCapacity, maxStorageCapacity);
+				bat.setMaxCapacity(capacity);
+				bat.setCapacity(capacity*initialStorageCapacityPercent);
+				
+				double chargeDischarge = rand(rand, minStorageChargeRate, maxStorageChargeRate);
+				bat.setMaxChargeRate(chargeDischarge);
+				bat.setMaxDischargeRate(chargeDischarge);
+				
+				bus.addChild(bat);
+				++storageCounter;
+			}
+		}
+		
+		return bus;
+	}
+
+	protected double rand(Random rand, double min, double max)
+	{
+		return min + rand.nextDouble()*(max-min);
+	}
+}
