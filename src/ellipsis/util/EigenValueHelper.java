@@ -7,8 +7,8 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 
-import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+//import cern.colt.matrix.DoubleMatrix2D;
+//import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 
 public class EigenValueHelper
 {
@@ -242,11 +242,11 @@ public class EigenValueHelper
 		System.out.println();
 	}
 
-	@SuppressWarnings("unused")
-	private static DoubleMatrix2D apacheToColt(RealMatrix m)
-	{
-		return new DenseDoubleMatrix2D(m.getData());
-	}
+//	@SuppressWarnings("unused")
+//	private static DoubleMatrix2D apacheToColt(RealMatrix m)
+//	{
+//		return new DenseDoubleMatrix2D(m.getData());
+//	}
 
 	private static RealMatrix inverse(RealMatrix M)
 	{
