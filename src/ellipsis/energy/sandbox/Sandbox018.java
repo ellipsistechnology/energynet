@@ -51,6 +51,8 @@ import ellipsis.util.TeeOutputStream;
  */
 public class Sandbox018
 {
+	protected static final int DISPLAY_DIMENSION = 35;
+	
     public static void main(String[] args)
 	{
 		new Sandbox018().run();
@@ -251,6 +253,8 @@ public class Sandbox018
             out.printf("\nTotal time %d:%.3f\n", m, s);
             out.println(SimpleDateFormat.getDateTimeInstance().format((Calendar.getInstance().getTime())));
         }
+        
+        out.flush();
     }
     
     protected void testResults(AnalysisResults results)
@@ -2651,9 +2655,15 @@ if(k == 2000)
             return;
         
         Map<String, Integer> numbers = results.getBusNumbers();
-        out.print("k,");
+        debugHeaderRow(numbers);
+        out.println();
+    }
+
+	protected void debugHeaderRow(Map<String, Integer> numbers)
+	{
+		out.print("k,");
         
-        int dimension = p.getDimension();
+        int dimension = debugDimension();
         debugLogNames(numbers, dimension, "p");
         debugLogNames(numbers, dimension, "q");
         debugLogNames(numbers, dimension, "e");
@@ -2688,8 +2698,7 @@ if(k == 2000)
         out.print("epsilon_pq,epsilon_ef,");
         out.print("gNorm,hNorm,gradNorm,");
         out.print("lambda*,");
-        out.println();
-    }
+	}
 
     public void debugLogNames(Map<String, Integer> numbers, int dimension, String type)
     {
@@ -2720,9 +2729,16 @@ if(k == 2000)
         if(!DEBUG)
             return;
         
-        out.print(k);
+        debugRow(k);
+        
+        out.println();
+    }
+
+	protected void debugRow(int k)
+	{
+		out.print(k);
         out.print(',');
-        int dimension = p.getDimension();
+        int dimension = debugDimension();
         
         // Power:
         for(int i = 0; i < dimension; ++i)
@@ -2950,9 +2966,13 @@ if(k == 2000)
         // lambda*
         out.print(format(lambdaStar().getMaxValue()));
         out.print(',');
-        
-        out.println();
-    }
+	}
+
+	protected int debugDimension()
+	{
+		int dimension = p.getDimension();
+		return Math.min(dimension, DISPLAY_DIMENSION);
+	}
     
     protected RealVector lambdaStar()
     {
@@ -3770,8 +3790,12 @@ if(k == 2000)
         
         out.println("index,bus,e,f,p,q");
         Map<String, Integer> numbers = results.getBusNumbers();
+        int i = 0;
         for (String name : numbers.keySet())
         {
+        	if(i >= DISPLAY_DIMENSION)
+        		break;
+        	
             int index = numbers.get(name);
             out.print(index);
             out.print(',');
@@ -3787,6 +3811,8 @@ if(k == 2000)
             out.print(',');
             out.print(format(s.getImaginary()));
             out.println();
+            
+            ++i;
         }
     }
     

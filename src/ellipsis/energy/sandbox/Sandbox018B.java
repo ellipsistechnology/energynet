@@ -188,9 +188,9 @@ public class Sandbox018B extends Sandbox018
         double gNorm, hNorm, gradNorm;
         Sandbox018B sb18B;
         
-        public TuneResult()
+        public TuneResult(Sandbox018B sb)
         {
-            sb18B = new Sandbox018B();
+            sb18B = sb;
         }
         
         public TuneResult run()
@@ -236,10 +236,10 @@ public class Sandbox018B extends Sandbox018
     static double INITIAL_STEP = 10;
     
     static boolean changed;
-    static TuneResult result_augG = new TuneResult();
-    static TuneResult result_augH = new TuneResult();
-    static TuneResult result_etaG = new TuneResult();
-    static TuneResult result_etaH = new TuneResult();
+    static TuneResult result_augG = new TuneResult(new Sandbox018B());
+    static TuneResult result_augH = new TuneResult(new Sandbox018B());
+    static TuneResult result_etaG = new TuneResult(new Sandbox018B());
+    static TuneResult result_etaH = new TuneResult(new Sandbox018B());
     
     static int SET_AUG_G = 1;
     static int SET_AUG_H = 2;
@@ -283,7 +283,7 @@ public class Sandbox018B extends Sandbox018
         result_etaH.sb18B.ETA_H = eTA_H;
     }
     
-    private static void tune()
+    protected static void tune()
     {
         System.out.println("Iter.,INITIAL_G_AUG_SCALE,INITIAL_H_AUG_SCALE,ETA_G,ETA_H,gNorm,hNorm,gradNorm,cost");
 
@@ -479,7 +479,7 @@ public class Sandbox018B extends Sandbox018
         InputStream lineData = getClass().getResourceAsStream(  "Sandbox018B-lineData.csv");
         InputStream switchData = getClass().getResourceAsStream("Sandbox018B-switchData.csv");
         InputStream loadData = getClass().getResourceAsStream(  "Sandbox018B-loadData.csv");
-        grid = GridGenerator.loadGrid("IEEE123-4bus", lineConfig, lineData, switchData, loadData);
+        grid = GridGenerator.loadGrid("IEEE123-nbus", lineConfig, lineData, switchData, loadData);
         
         // Add slack bus:
         SlackSource slack = new SlackSource();
