@@ -8,13 +8,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import javax.swing.JFrame;
-
 import org.apache.commons.math3.complex.Complex;
 
 import com.mls.util.Util;
 
-import ellipsis.energy.grid.GridDisplay;
 import ellipsis.energy.grid.GridGenerator;
 import ellipsis.energy.grid.SlackSource;
 import ellipsis.util.EmptyOutputStream;
@@ -27,6 +24,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		_35BUS,
 		_44BUS,
 		_52BUS,
+		_60BUS,
 	}
 	
 	public static Network testNetwork = Network._52BUS; 
@@ -73,6 +71,9 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 			break;
 		case _52BUS:
 			config52();
+			break;
+		case _60BUS:
+			config60();
 			break;
 		default:
 			break;
@@ -150,16 +151,46 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
     {
     	config();
                  
-                      INITIAL_G_AUG_SCALE = 0.0077;//0.0037;//0.00075;//0.001;
+                      INITIAL_G_AUG_SCALE = 0.0097;
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7.7;//8;
+                      INITIAL_H_AUG_SCALE = 7.8;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
-                                    ETA_G = 3.6;//3.2;//3;
-                                    ETA_H = 0.005;//0.0051;//0.005;
+                                    ETA_G = 3.7;
+                                    ETA_H = 0.0051;
+                                   
+                                       XI = 0.2;
+                               
+                                        K = 5000;//3000;
+                               DEBUG_RATE = K / 1000;
+              AGENT_SELECTION_PROBABILITY = 1.0;
+             
+                        INITIAL_STEP_SIZE = 1;
+                            MIN_STEP_SIZE = 1e-50;
+                              MAX_X_STEPS = 1;
+                              
+                          EPSILON_BASE_PQ = 100;
+                          EPSILON_BASE_EF = 1000;
+                           EPSILON_TARGET = 1;
+    }
+    
+    private void config60()
+    {
+    	config();
+                 
+                      INITIAL_G_AUG_SCALE = 0.0097;
+                         G_AUG_SCALE_STEP = 1.001;
+                          G_MAX_AUG_SCALE = 1e6;
+                      
+                      INITIAL_H_AUG_SCALE = 7.8;
+                         H_AUG_SCALE_STEP = 1.001;
+                          H_MAX_AUG_SCALE = 1e6;
+               
+                                    ETA_G = 3.7;
+                                    ETA_H = 0.0051;
                                    
                                        XI = 0.2;
                                
@@ -264,6 +295,9 @@ if(k > 2900)
 		case _52BUS:
 			initGrid52();
 			break;
+		case _60BUS:
+			initGrid60();
+			break;
 		default:
 			break;
 		}
@@ -287,6 +321,15 @@ if(k > 2900)
         initGridWith(lineConfig, lineData, switchData, loadData);
         
 //        GridDisplay.showInFrame(grid).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+	
+	protected void initGrid60()
+	{
+        InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
+        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D-lineData.csv");
+        InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
+        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D-loadData.csv");
+        initGridWith(lineConfig, lineData, switchData, loadData);
     }
 
 	protected void initGridWith(InputStream lineConfig, InputStream lineData, InputStream switchData, InputStream loadData)
