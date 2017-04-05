@@ -86,16 +86,16 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                         DISABLE_MU_UPDATE = false;
                         DISABLE_LINE_LOSS = false;
                  
-                      INITIAL_G_AUG_SCALE = 0.0037;//0.00075;//0.001;
+                      INITIAL_G_AUG_SCALE = 0.0077;//0.0037;//0.00075;//0.001;
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 8;
+                      INITIAL_H_AUG_SCALE = 7.7;//8;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
-                                    ETA_G = 3.2;//3;
-                                    ETA_H = 0.0051;//0.005;
+                                    ETA_G = 3.6;//3.2;//3;
+                                    ETA_H = 0.005;//0.0051;//0.005;
                                    
                                        XI = 0.2;
                                

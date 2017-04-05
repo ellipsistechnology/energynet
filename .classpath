@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/joptimizer-3.3.0.jar"/>
-	<classpathentry kind="lib" path="lib/LAML-1.5.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ellipsis-common"/>
+	<classpathentry kind="lib" path="lib/LAML-1.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
