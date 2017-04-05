@@ -8,10 +8,13 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import javax.swing.JFrame;
+
 import org.apache.commons.math3.complex.Complex;
 
 import com.mls.util.Util;
 
+import ellipsis.energy.grid.GridDisplay;
 import ellipsis.energy.grid.GridGenerator;
 import ellipsis.energy.grid.SlackSource;
 import ellipsis.util.EmptyOutputStream;
@@ -19,6 +22,15 @@ import ellipsis.util.TeeOutputStream;
 
 public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 {
+	static enum Network
+	{
+		_35BUS,
+		_44BUS,
+		_52BUS,
+	}
+	
+	public static Network testNetwork = Network._52BUS; 
+	
 	private int gConvergedIteration = -1;
 	private double gConvergeThreshold = 5e-1;
 	private int gradConvergedIteration = -1;
@@ -51,7 +63,24 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
               
         
         //// Override configuration ////
+        switch (testNetwork)
+		{
+		case _35BUS:
+			// Config already performed by call to super()
+			break;
+		case _44BUS:
+			config44();
+			break;
+		case _52BUS:
+			config52();
+			break;
+		default:
+			break;
+		}
+    }
         
+    private void config()
+    {
                                 PROJECT_X = true;
                            FORMAT_NUMBERS = false;
               
@@ -85,6 +114,41 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                  DISABLE_CONSENSUS_UPDATE = false;
                         DISABLE_MU_UPDATE = false;
                         DISABLE_LINE_LOSS = false;
+    }
+    
+    private void config44()
+    {
+    	config();
+                 
+                      INITIAL_G_AUG_SCALE = 0.0077;//0.0037;//0.00075;//0.001;
+                         G_AUG_SCALE_STEP = 1.001;
+                          G_MAX_AUG_SCALE = 1e6;
+                      
+                      INITIAL_H_AUG_SCALE = 7.7;//8;
+                         H_AUG_SCALE_STEP = 1.001;
+                          H_MAX_AUG_SCALE = 1e6;
+               
+                                    ETA_G = 3.6;//3.2;//3;
+                                    ETA_H = 0.005;//0.0051;//0.005;
+                                   
+                                       XI = 0.2;
+                               
+                                        K = 5000;//3000;
+                               DEBUG_RATE = K / 1000;
+              AGENT_SELECTION_PROBABILITY = 1.0;
+             
+                        INITIAL_STEP_SIZE = 1;
+                            MIN_STEP_SIZE = 1e-50;
+                              MAX_X_STEPS = 1;
+                              
+                          EPSILON_BASE_PQ = 100;
+                          EPSILON_BASE_EF = 1000;
+                           EPSILON_TARGET = 1;
+    }
+    
+    private void config52()
+    {
+    	config();
                  
                       INITIAL_G_AUG_SCALE = 0.0077;//0.0037;//0.00075;//0.001;
                          G_AUG_SCALE_STEP = 1.001;
@@ -189,11 +253,45 @@ if(k > 2900)
 	@Override
     protected void initGrid()
     {
+		switch (testNetwork)
+		{
+		case _35BUS:
+			super.initGrid();
+			break;
+		case _44BUS:
+			initGrid44();
+			break;
+		case _52BUS:
+			initGrid52();
+			break;
+		default:
+			break;
+		}
+    }
+	
+	protected void initGrid44()
+	{
+        InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D44-lineConfig");
+        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D44-lineData.csv");
+        InputStream switchData = getClass().getResourceAsStream("Sandbox018D44-switchData.csv");
+        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D44-loadData.csv");
+        initGridWith(lineConfig, lineData, switchData, loadData);
+    }
+	
+	protected void initGrid52()
+	{
         InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
-        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D-lineData.csv");
+        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D52-lineData.csv");
         InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
-        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D-loadData.csv");
-        grid = GridGenerator.loadGrid("IEEE123-subset", lineConfig, lineData, switchData, loadData);
+        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D52-loadData.csv");
+        initGridWith(lineConfig, lineData, switchData, loadData);
+        
+//        GridDisplay.showInFrame(grid).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+	protected void initGridWith(InputStream lineConfig, InputStream lineData, InputStream switchData, InputStream loadData)
+	{
+		grid = GridGenerator.loadGrid("IEEE123-subset", lineConfig, lineData, switchData, loadData);
         
         // Add slack bus:
         SlackSource slack = new SlackSource();
@@ -214,8 +312,17 @@ if(k > 2900)
         addDG(26, 500e3, 100e3, 50e3);
         addDG(29, 500e3, 100e3, 50e3);
         
-        addDG(36, 500e3, 100e3, 50e3);
-        
-//        GridDisplay.showInFrame(grid).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
+        switch (testNetwork)
+		{
+        case _52BUS:
+        	addDG(42, 500e3, 100e3, 50e3);
+        	addDG(47, 500e3, 100e3, 50e3);
+		case _44BUS:
+			addDG(36, 500e3, 100e3, 50e3);
+			break;
+
+		default:
+			break;
+		}
+	}
 }

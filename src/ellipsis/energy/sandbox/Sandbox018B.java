@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Random;
 
-import javax.swing.JFrame;
-
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.complex.ComplexUtils;
 import org.apache.commons.math3.exception.MathIllegalArgumentException;
@@ -18,7 +16,6 @@ import org.apache.commons.math3.linear.SingularMatrixException;
 
 import com.mls.util.ThreadPool;
 
-import ellipsis.energy.grid.GridDisplay;
 import ellipsis.energy.grid.GridGenerator;
 import ellipsis.energy.grid.SlackSource;
 import ellipsis.util.EmptyOutputStream;
@@ -500,6 +497,6 @@ public class Sandbox018B extends Sandbox018
         addDG(26, 500e3, 100e3, 50e3);
         addDG(29, 500e3, 100e3, 50e3);
         
-        GridDisplay.showInFrame(grid).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        GridDisplay.showInFrame(grid).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
