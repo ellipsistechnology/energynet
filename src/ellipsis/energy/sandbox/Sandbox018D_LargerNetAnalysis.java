@@ -239,7 +239,7 @@ if(k > 2900)
 
 	public static void main(String[] args)
     {
-		tune = false;
+		tune = true;
 		
 		if(tune)
         {
