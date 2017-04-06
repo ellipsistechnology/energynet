@@ -27,7 +27,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		_60BUS,
 	}
 	
-	public static Network testNetwork = Network._52BUS; 
+	public static Network testNetwork = Network._60BUS; 
 	
 	private int gConvergedIteration = -1;
 	private double gConvergeThreshold = 5e-1;
@@ -189,7 +189,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
-                                    ETA_G = 3.7;
+                                    ETA_G = 3.8;
                                     ETA_H = 0.0051;
                                    
                                        XI = 0.2;
@@ -252,7 +252,7 @@ if(k > 2900)
             System.out.println("Tuning...");
             tune();
             System.out.println("Tuning complete.\nRunning...");
-            new Sandbox018B().run();
+            new Sandbox018D_LargerNetAnalysis().run();
             System.out.println("Running complete.");
         }
         else if(analyseLambdaStar)
@@ -357,6 +357,9 @@ if(k > 2900)
         
         switch (testNetwork)
 		{
+        case _60BUS:
+            addDG(54, 500e3, 100e3, 50e3);
+            addDG(57, 500e3, 100e3, 50e3);
         case _52BUS:
         	addDG(42, 500e3, 100e3, 50e3);
         	addDG(47, 500e3, 100e3, 50e3);
