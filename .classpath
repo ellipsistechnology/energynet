@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="laml-src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/common/lib/cglib-nodep-2.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.2.jar" sourcepath="lib/commons-math3-3.2-sources.jar">
@@ -16,5 +15,6 @@
 	<classpathentry kind="lib" path="lib/joptimizer-3.3.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ellipsis-common"/>
 	<classpathentry kind="lib" path="lib/LAML-1.5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

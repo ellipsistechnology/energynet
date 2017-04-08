@@ -26,9 +26,10 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		_52BUS,
 		_60BUS,
 		_67BUS,
+		_77BUS,
 	}
 	
-	public static Network testNetwork = Network._67BUS; 
+	public static Network testNetwork = Network._77BUS; 
 	
 	private int gConvergedIteration = -1;
 	private double gConvergeThreshold = 5e-1;
@@ -78,6 +79,9 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 			break;
 		case _67BUS:
 			config67();
+			break;
+		case _77BUS:
+			config77();
 			break;
 		default:
 			break;
@@ -240,6 +244,36 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                           EPSILON_BASE_EF = 1000;
                            EPSILON_TARGET = 1;
     }
+    
+    private void config77()
+    {
+    	config();
+                 
+                      INITIAL_G_AUG_SCALE = 0.0127;
+                         G_AUG_SCALE_STEP = 1.001;
+                          G_MAX_AUG_SCALE = 1e6;
+                      
+                      INITIAL_H_AUG_SCALE = 8.2;
+                         H_AUG_SCALE_STEP = 1.001;
+                          H_MAX_AUG_SCALE = 1e6;
+               
+                                    ETA_G = 4.1;
+                                    ETA_H = 0.0056;
+                                   
+                                       XI = 0.2;
+                               
+                                        K = 5000;//3000;
+                               DEBUG_RATE = K / 1000;
+              AGENT_SELECTION_PROBABILITY = 1.0;
+             
+                        INITIAL_STEP_SIZE = 1;
+                            MIN_STEP_SIZE = 1e-50;
+                              MAX_X_STEPS = 1;
+                              
+                          EPSILON_BASE_PQ = 100;
+                          EPSILON_BASE_EF = 1000;
+                           EPSILON_TARGET = 1;
+    }
 	
 	@Override
 	protected void debug(int k)
@@ -335,6 +369,9 @@ if(k > 2900)
 		case _67BUS:
 			initGrid67();
 			break;
+		case _77BUS:
+			initGrid77();
+			break;
 		default:
 			break;
 		}
@@ -372,6 +409,15 @@ if(k > 2900)
 	protected void initGrid67()
 	{
         InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
+        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D67-lineData.csv");
+        InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
+        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D67-loadData.csv");
+        initGridWith(lineConfig, lineData, switchData, loadData);
+    }
+	
+	protected void initGrid77()
+	{
+        InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
         InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D-lineData.csv");
         InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
         InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D-loadData.csv");
@@ -403,6 +449,9 @@ if(k > 2900)
         
         switch (testNetwork)
 		{
+        case _77BUS:
+        	addDG(93, 500e3, 100e3, 50e3);
+        	addDG(87, 500e3, 100e3, 50e3);
         case _67BUS:
         	addDG(60, 500e3, 100e3, 50e3);
         	addDG(64, 500e3, 100e3, 50e3);
