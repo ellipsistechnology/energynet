@@ -7,11 +7,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.linear.RealVector;
 
+import com.mls.util.Timer;
 import com.mls.util.Util;
 
+import ellipsis.energy.calculation.AnalysisResults;
 import ellipsis.energy.grid.GridGenerator;
 import ellipsis.energy.grid.SlackSource;
 import ellipsis.util.EmptyOutputStream;
@@ -29,7 +36,8 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		_77BUS,
 	}
 	
-	public static Network testNetwork = Network._77BUS; 
+	public Network testNetwork = Network._77BUS;
+	public boolean convergenceAnalysis = true;
 	
 	private int gConvergedIteration = -1;
 	private double gConvergeThreshold = 5e-1;
@@ -40,27 +48,104 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 	private int consensusConvergedIteration = -1;
 	private double consensusConvergeThreshold = 1e-1;
 	
-	public Sandbox018D_LargerNetAnalysis()
+	public Sandbox018D_LargerNetAnalysis(Network testNetwork, boolean convergenceAnalysis, PrintStream out)
     {
-        super();
+        this.testNetwork = testNetwork;
+        this.convergenceAnalysis = convergenceAnalysis;
         
-        if(tune)
+        initD(out);
+    }
+	
+	public Sandbox018D_LargerNetAnalysis() 
+	{
+		initD(null);
+	}
+	
+	
+	private void initD(PrintStream out) 
+	{
+		this.out = out;
+		
+		//// Override configuration ////
+        		
+                                PROJECT_X = true;		
+                           FORMAT_NUMBERS = false;		
+              		
+                    VALIDATE_BACKTRACKING = false;		
+               VALIDATE_LAGRANGE_DECREASE = false;		
+              		
+                 START_WITH_TRUE_VOTLAGES = false;		
+                START_WITH_OPTIMAL_POWERS = true;		
+                 USE_SIGMOID_ALPHA_UPDATE = false;		
+                               USE_TRUE_G = false;		
+		
+                            ROUND_TO_ZERO = false;		
+                                MIN_VALUE = 1e-12;		
+                              MIN_G_VALUE = 1e-6;		
+                              MIN_H_VALUE = 1e-6;		
+		
+                       KEEP_G_AND_H_CLOSE = true;		
+        DONT_UPDATE_ALPHA_WHILE_IMPROVING = true;		
+               MIN_CONSTRAINT_IMPROVEMENT = 0.99;		
+                        ALPHA_UPDATE_RATE = 1;		
+		
+                  APPROXIMATE_CONSTRAINTS = true;		
+                          CONSTRAINT_BASE = 1.0;		
+                        CONSTRAINT_TARGET = 0.001;		
+               		
+                             DISABLE_COST = false;		
+                 DISABLE_VOTLAGES_UPDATES = false;		
+                DISABLE_POWER_FLOW_UPDATE = false;		
+                    DISABLE_LAMBDA_UPDATE = false;		
+               		
+                 DISABLE_CONSENSUS_UPDATE = false;		
+                        DISABLE_MU_UPDATE = false;		
+                        DISABLE_LINE_LOSS = false;		
+                 		
+                      INITIAL_G_AUG_SCALE = 0.001;		
+                         G_AUG_SCALE_STEP = 1.001;		
+                          G_MAX_AUG_SCALE = 1e6;		
+                      		
+                      INITIAL_H_AUG_SCALE = 8;		
+                         H_AUG_SCALE_STEP = 1.001;		
+                          H_MAX_AUG_SCALE = 1e6;		
+               		
+                                    ETA_G = 3;		
+                                    ETA_H = 0.005;		
+                                   		
+                                       XI = 0.2;		
+                               		
+                                        K = 3000;		
+                               DEBUG_RATE = K / 1000;		
+              AGENT_SELECTION_PROBABILITY = 1.0;		
+             		
+                        INITIAL_STEP_SIZE = 1;		
+                            MIN_STEP_SIZE = 1e-50;		
+                              MAX_X_STEPS = 1;		
+                              		
+                          EPSILON_BASE_PQ = 100;//0.1;		
+                          EPSILON_BASE_EF = 1000;//100;		
+                           EPSILON_TARGET = 1;//10e-2;		
+		
+        if(this.out == null)
         {
-            // No output from test cases:
-            out = new PrintStream(new EmptyOutputStream());
+			if(tune)
+	        {
+	            // No output from test cases:
+				this.out = new PrintStream(new EmptyOutputStream());
+	        }
+	        else
+	        {
+	            try
+	            {
+	            	this.out = new PrintStream(new TeeOutputStream(new FileOutputStream("/tmp/Sandbox018D.csv"), System.out));
+	            }
+	            catch (FileNotFoundException e)
+	            {
+	                throw new RuntimeException(e);
+	            }
+	        }
         }
-        else
-        {
-            try
-            {
-                out = new PrintStream(new TeeOutputStream(new FileOutputStream("/tmp/Sandbox018D.csv"), System.out));
-            }
-            catch (FileNotFoundException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-              
         
         //// Override configuration ////
         switch (testNetwork)
@@ -86,9 +171,106 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		default:
 			break;
 		}
+	}
+	
+	@Override
+	protected void testResults(AnalysisResults results) 
+	{
+		if(!convergenceAnalysis)
+			super.testResults(results);
+	}
+	
+	@Override
+	public void loop()
+    {
+		if(convergenceAnalysis)
+		{
+			// Set up all test cases to run concurrently:
+			List<Sandbox018D_LargerNetAnalysis> testCases = new ArrayList<Sandbox018D_LargerNetAnalysis>();
+			for (Network net : Network.values()) 
+			{
+				Sandbox018D_LargerNetAnalysis testCase = new Sandbox018D_LargerNetAnalysis(net, true, out)
+				{
+					@Override
+					protected void debugHeader(AnalysisResults results) {} // Avoid logging headers.
+				};
+				testCase.init();
+				testCases.add(testCase);
+			}
+			
+			// Iterations:
+	        Random agentSelector = new Random(0);
+	        Timer timer = Timer.startNewTimer();
+	        for(int k = 0; k < K; ++k)
+	        {
+	        	for (Sandbox018D_LargerNetAnalysis testCase : testCases) 
+	        	{
+	        		testCase.iteration(agentSelector, timer, k);
+				}
+	        	storeConvergenceRow(k, testCases);
+	        }
+	        
+	        // Prepare and log convergence data:
+	        for (Sandbox018D_LargerNetAnalysis testCase : testCases)
+	        {
+	        	testCase.finalState = testCase.states.get(testCase.states.size()-1);
+	        }
+	        
+	        for(int k = 0; k < K; ++k)
+	        {
+	        	logConvergenceRow(k, testCases);
+	        }
+		}
+		else
+		{
+			super.loop();
+		}
     }
-        
-    private void config()
+
+    private void storeConvergenceRow(int k, List<Sandbox018D_LargerNetAnalysis> testCases) 
+    {
+    	for (Sandbox018D_LargerNetAnalysis testCase : testCases)
+    	{
+    		testCase.storeConvergenceRow();
+    	}
+	}
+
+    private ArrayList<Double> consensusErrors = new ArrayList<>();
+    private ArrayList<RealVector> states = new ArrayList<>();
+    private RealVector finalState;
+	private void storeConvergenceRow() 
+	{
+		consensusErrors.add(consensusError()); 
+		states.add(state());
+	}
+
+	protected RealVector state() 
+	{
+		return p
+		  .append(q)
+		  .append(e)
+		  .append(f);
+	}
+
+	protected void logConvergenceRow(int k, List<Sandbox018D_LargerNetAnalysis> testCases) 
+    {
+    	out.print(k);
+    	out.print(",");
+		for (Sandbox018D_LargerNetAnalysis testCase : testCases) 
+		{
+			// Consensus error:
+			out.print(testCase.consensusErrors.get(k));
+			out.print(",");
+			
+			// State norm:
+			RealVector state = testCase.states.get(k);
+			out.print(state.subtract(testCase.finalState).getNorm()/finalState.getNorm());
+			out.print(",");
+		}
+		out.println();
+	}
+
+	private void config()
     {
                                 PROJECT_X = true;
                            FORMAT_NUMBERS = false;
@@ -253,12 +435,12 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 8.2;
+                      INITIAL_H_AUG_SCALE = 8.8;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
                                     ETA_G = 4.1;
-                                    ETA_H = 0.0056;
+                                    ETA_H = 0.0063;
                                    
                                        XI = 0.2;
                                
@@ -278,6 +460,9 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 	@Override
 	protected void debug(int k)
 	{
+		if(convergenceAnalysis)
+			return;
+		
 		super.debug(k);
 		
 if(k > 2900)
@@ -467,6 +652,48 @@ if(k > 2900)
 
 		default:
 			break;
+		}
+	}
+	
+	@Override
+	public void logConfig() 
+	{
+		if(!convergenceAnalysis)
+			super.logConfig();
+	}
+	
+	@Override
+	public void logBusses(AnalysisResults results) 
+	{
+		if(!convergenceAnalysis)
+			super.logBusses(results);
+	}
+	
+	@Override
+	protected void debugHeaderRow(Map<String, Integer> numbers) 
+	{
+		if(convergenceAnalysis)
+		{
+			out.println("Consensus convergence: Iteration at which the error permanently drops below the threshold percentage of total system DG power.");
+			out.println("OPF convergence: Iteration at which the norm of the mean difference between final state value and iteration state value drops below the threshold percentage.");
+			out.println();
+			out.print("Test case:,");
+			for (Network net : Network.values()) 
+			{
+				out.print(net);
+				out.print(",,");
+			}
+			out.println();
+			
+			out.print("Iteration,");
+			for (@SuppressWarnings("unused") Network net : Network.values()) 
+			{
+				out.print("Con. Error,State Norm,");
+			}
+		}
+		else
+		{
+			super.debugHeaderRow(numbers);
 		}
 	}
 }

@@ -2434,34 +2434,43 @@ if(debug)
         Timer timer = Timer.startNewTimer();
         for(int k = 0; k < K; ++k)
         {
-            int count = 0;
-if(k == 2000)
-    Util.nullop();
-            for (Agent agent : agents)
-            {
-                if(agentSelector.nextDouble() > AGENT_SELECTION_PROBABILITY)
-                    continue;
-
-                agent.step(k);
-                update();
-                ++count;
-                
-                debugStepEnd(k, agent);
-            }
-
-            // Validate consensus average:
-            validateConsensus();
-            
-            cpuTime = timer.lapNano()/1e6/count;
-            
-            // Estimate convergence:
-//            addSamples();
-
-            // Log:
-            if(k%DEBUG_RATE == 0)
-                debug(k);
+            iteration(agentSelector, timer, k);
         }
     }
+
+    /**
+     * Executes a single iteration.
+     * @param agentSelector
+     * @param timer
+     * @param k
+     */
+	protected void iteration(Random agentSelector, Timer timer, int k) {
+		int count = 0;
+
+		for (Agent agent : agents)
+		{
+		    if(agentSelector.nextDouble() > AGENT_SELECTION_PROBABILITY)
+		        continue;
+
+		    agent.step(k);
+		    update();
+		    ++count;
+		    
+		    debugStepEnd(k, agent);
+		}
+
+		// Validate consensus average:
+		validateConsensus();
+		
+		cpuTime = timer.lapNano()/1e6/count;
+		
+		// Estimate convergence:
+//            addSamples();
+
+		// Log:
+		if(k%DEBUG_RATE == 0)
+		    debug(k);
+	}
 
 //    double pscale = 1;
 //    double qscale = 1;
@@ -2500,8 +2509,42 @@ if(k == 2000)
         if(abs(mismatch_q - hSum_q) > 1e-9)
             throw new RuntimeException("Consensus power mismatch (q) incorrect:, mismatch=,"+mismatch_q+", sum=,"+hSum_q);
     }
+    
+    /**
+     * @return Power mismatch error as a percentage of total DG output.
+     */
+    protected double consensusError()
+    {
+    	// True values:
+    	double h_p = averagePowerMismatch_p();
+    	double h_q = averagePowerMismatch_q();
+    	
+    	// Consensus estimated values:
+//    	double approxH_p = hsum_p();
+//    	double approxH_q = hsum_q();
+    	double error_p = sum(a -> Math.abs(a.hp-h_p), agents);
+    	double error_q = sum(a -> Math.abs(a.hq-h_q), agents);
+    	
+    	// Error as a percentage of total DG power:
+    	Complex dgPower = totalDGPower();
+		Complex percentageError = new Complex(error_p/dgPower.getReal(), error_q/dgPower.getImaginary());
+		return percentageError.abs();
+    }
 
-    protected double hsum_q()
+    private Complex totalDGPower() 
+    {
+		Complex dg = Complex.ZERO;
+		for (Agent agent : agents) 
+		{
+			if(agent.isGenerator)
+			{
+				dg = dg.add(new Complex(agent.p, agent.q));
+			}
+		}
+		return dg;
+	}
+
+	protected double hsum_q()
     {
         return sumA(agents, agent -> agent.hq-agent.wq);
     }
