@@ -423,9 +423,9 @@ if(debug)
                 } while(   i < MAX_X_STEPS 
                            && 
                            (
-                               (normGradL_p() > epsilon_pq || normGradL_q() > epsilon_pq)&steppedPQ
+                               (normGradL_p() > epsilon_pq || normGradL_q() > epsilon_pq)&&steppedPQ
                                ||
-                               (normGradL_e() > epsilon_ef || normGradL_f() > epsilon_ef)&steppedEF
+                               (normGradL_e() > epsilon_ef || normGradL_f() > epsilon_ef)&&steppedEF
                            )
                        );
                 

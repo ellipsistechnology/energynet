@@ -35,6 +35,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		_67BUS,
 		_77BUS,
 		_88BUS,
+		_97BUS,
 	}
 	
 	public Network testNetwork = Network._88BUS;
@@ -171,6 +172,9 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 			break;
 		case _88BUS:
 			config88();
+			break;
+		case _97BUS:
+			config97();
 			break;
 		default:
 			break;
@@ -469,12 +473,42 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 8.8;
+                      INITIAL_H_AUG_SCALE = 8.4;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
                                     ETA_G = 4.1;
-                                    ETA_H = 0.0063;
+                                    ETA_H = 0.0071;
+                                   
+                                       XI = 0.2;
+                               
+                                        K = 5000;//3000;
+                               DEBUG_RATE = K / 1000;
+              AGENT_SELECTION_PROBABILITY = 1.0;
+             
+                        INITIAL_STEP_SIZE = 1;
+                            MIN_STEP_SIZE = 1e-50;
+                              MAX_X_STEPS = 1;
+                              
+                          EPSILON_BASE_PQ = 100;
+                          EPSILON_BASE_EF = 1000;
+                           EPSILON_TARGET = 1;
+    }
+    
+    private void config97()
+    {
+    	config();
+                 
+                      INITIAL_G_AUG_SCALE = 0.0127;
+                         G_AUG_SCALE_STEP = 1.001;
+                          G_MAX_AUG_SCALE = 1e6;
+                      
+                      INITIAL_H_AUG_SCALE = 8.6;
+                         H_AUG_SCALE_STEP = 1.001;
+                          H_MAX_AUG_SCALE = 1e6;
+               
+                                    ETA_G = 4.1;
+                                    ETA_H = 0.0069;
                                    
                                        XI = 0.2;
                                
@@ -594,6 +628,9 @@ if(k > 2900)
 		case _88BUS:
 			initGrid88();
 			break;
+		case _97BUS:
+			initGrid97();
+			break;
 		default:
 			break;
 		}
@@ -649,6 +686,15 @@ if(k > 2900)
 	protected void initGrid88()
 	{
         InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
+        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D88-lineData.csv");
+        InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
+        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D88-loadData.csv");
+        initGridWith(lineConfig, lineData, switchData, loadData);
+    }
+	
+	protected void initGrid97()
+	{
+        InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
         InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D-lineData.csv");
         InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
         InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D-loadData.csv");
@@ -680,6 +726,9 @@ if(k > 2900)
         
         switch (testNetwork)
 		{
+        case _97BUS:
+        	addDG(74, 500e3, 100e3, 50e3);
+        	addDG(68, 500e3, 100e3, 50e3);
         case _88BUS:
         	addDG(76, 500e3, 100e3, 50e3);
         	addDG(81, 500e3, 100e3, 50e3);
