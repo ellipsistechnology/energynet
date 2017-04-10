@@ -38,7 +38,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		_97BUS,
 	}
 	
-	public Network testNetwork = Network._88BUS;
+	public Network testNetwork = Network._97BUS;
 	public boolean convergenceAnalysis = false;
 	
 	private int gConvergedIteration = -1;
@@ -473,16 +473,16 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 8.4;
+                      INITIAL_H_AUG_SCALE = 7;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
-                                    ETA_G = 4.1;
-                                    ETA_H = 0.0071;
+                                    ETA_G = 4.2;
+                                    ETA_H = 0.0085;
                                    
                                        XI = 0.2;
                                
-                                        K = 5000;//3000;
+                                        K = 7000;//3000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
@@ -503,16 +503,16 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 8.6;
+                      INITIAL_H_AUG_SCALE = 7;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
-                                    ETA_G = 4.1;
-                                    ETA_H = 0.0069;
+                                    ETA_G = 4.2;
+                                    ETA_H = 0.0085;
                                    
                                        XI = 0.2;
                                
-                                        K = 5000;//3000;
+                                        K = 7000;//3000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
