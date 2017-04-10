@@ -2531,7 +2531,7 @@ if(debug)
 		return percentageError.abs();
     }
 
-    private Complex totalDGPower() 
+    protected Complex totalDGPower() 
     {
 		Complex dg = Complex.ZERO;
 		for (Agent agent : agents) 

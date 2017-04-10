@@ -36,9 +36,11 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		_77BUS,
 		_88BUS,
 		_97BUS,
+		_107BUS,
+		_117BUS
 	}
 	
-	public Network testNetwork = Network._97BUS;
+	public Network testNetwork = Network._107BUS;
 	public boolean convergenceAnalysis = false;
 	
 	private int gConvergedIteration = -1;
@@ -153,7 +155,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
         switch (testNetwork)
 		{
 		case _35BUS:
-			// Config already performed by call to super()
+			// Config already performed above
 			break;
 		case _44BUS:
 			config44();
@@ -175,6 +177,12 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 			break;
 		case _97BUS:
 			config97();
+			break;
+		case _107BUS:
+			config107();
+			break;
+		case _117BUS:
+			config117();
 			break;
 		default:
 			break;
@@ -209,7 +217,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 			// Iterations:
 	        Random agentSelector = new Random(0);
 	        Timer timer = Timer.startNewTimer();
-	        for(int k = 0; k < K; ++k)
+	        for(int k = 0; k < 10000; ++k)
 	        {
 	        	for (Sandbox018D_LargerNetAnalysis testCase : testCases) 
 	        	{
@@ -272,7 +280,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 			
 			// State norm:
 			RealVector state = testCase.states.get(k);
-			out.print(state.subtract(testCase.finalState).getNorm()/finalState.getNorm());
+			out.print(state.subtract(testCase.finalState).getNorm());
 			out.print(",");
 		}
 		out.println();
@@ -524,6 +532,66 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                           EPSILON_BASE_EF = 1000;
                            EPSILON_TARGET = 1;
     }
+    
+    private void config107()
+    {
+    	config();
+                 
+                      INITIAL_G_AUG_SCALE = 0.0127;
+                         G_AUG_SCALE_STEP = 1.001;
+                          G_MAX_AUG_SCALE = 1e6;
+                      
+                      INITIAL_H_AUG_SCALE = 7;
+                         H_AUG_SCALE_STEP = 1.001;
+                          H_MAX_AUG_SCALE = 1e6;
+               
+                                    ETA_G = 4.2;
+                                    ETA_H = 0.0085;
+                                   
+                                       XI = 0.2;
+                               
+                                        K = 8000;//3000;
+                               DEBUG_RATE = K / 1000;
+              AGENT_SELECTION_PROBABILITY = 1.0;
+             
+                        INITIAL_STEP_SIZE = 1;
+                            MIN_STEP_SIZE = 1e-50;
+                              MAX_X_STEPS = 1;
+                              
+                          EPSILON_BASE_PQ = 100;
+                          EPSILON_BASE_EF = 1000;
+                           EPSILON_TARGET = 1;
+    }
+    
+    private void config117()
+    {
+    	config();
+                 
+                      INITIAL_G_AUG_SCALE = 0.0127;
+                         G_AUG_SCALE_STEP = 1.001;
+                          G_MAX_AUG_SCALE = 1e6;
+                      
+                      INITIAL_H_AUG_SCALE = 7;
+                         H_AUG_SCALE_STEP = 1.001;
+                          H_MAX_AUG_SCALE = 1e6;
+               
+                                    ETA_G = 4.2;
+                                    ETA_H = 0.0085;
+                                   
+                                       XI = 0.2;
+                               
+                                        K = 9000;//3000;
+                               DEBUG_RATE = K / 1000;
+              AGENT_SELECTION_PROBABILITY = 1.0;
+             
+                        INITIAL_STEP_SIZE = 1;
+                            MIN_STEP_SIZE = 1e-50;
+                              MAX_X_STEPS = 1;
+                              
+                          EPSILON_BASE_PQ = 100;
+                          EPSILON_BASE_EF = 1000;
+                           EPSILON_TARGET = 1;
+    }
 	
 	@Override
 	protected void debug(int k)
@@ -631,6 +699,12 @@ if(k > 2900)
 		case _97BUS:
 			initGrid97();
 			break;
+		case _107BUS:
+			initGrid107();
+			break;
+		case _117BUS:
+			initGrid117();
+			break;
 		default:
 			break;
 		}
@@ -695,9 +769,27 @@ if(k > 2900)
 	protected void initGrid97()
 	{
         InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
-        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D-lineData.csv");
+        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D97-lineData.csv");
         InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
-        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D-loadData.csv");
+        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D97-loadData.csv");
+        initGridWith(lineConfig, lineData, switchData, loadData);
+    }
+	
+	protected void initGrid107()
+	{
+        InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
+        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D107-lineData.csv");
+        InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
+        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D107-loadData.csv");
+        initGridWith(lineConfig, lineData, switchData, loadData);
+    }
+	
+	protected void initGrid117()
+	{
+        InputStream lineConfig = getClass().getResourceAsStream("Sandbox018D-lineConfig");
+        InputStream lineData = getClass().getResourceAsStream(  "Sandbox018D117-lineData.csv");
+        InputStream switchData = getClass().getResourceAsStream("Sandbox018D-switchData.csv");
+        InputStream loadData = getClass().getResourceAsStream(  "Sandbox018D117-loadData.csv");
         initGridWith(lineConfig, lineData, switchData, loadData);
     }
 
@@ -726,6 +818,11 @@ if(k > 2900)
         
         switch (testNetwork)
 		{
+        case _117BUS:
+        	addDG(110, 500e3, 100e3, 50e3);
+        case _107BUS:
+        	addDG(102, 500e3, 100e3, 50e3);
+        	addDG(99, 500e3, 100e3, 50e3);
         case _97BUS:
         	addDG(74, 500e3, 100e3, 50e3);
         	addDG(68, 500e3, 100e3, 50e3);
