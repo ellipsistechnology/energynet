@@ -40,8 +40,8 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		_117BUS
 	}
 	
-	public Network testNetwork = Network._107BUS;
-	public boolean convergenceAnalysis = false;
+	public Network testNetwork = Network._117BUS;
+	public boolean convergenceAnalysis = true;
 	
 	private int gConvergedIteration = -1;
 	private double gConvergeThreshold = 5e-1;
@@ -229,7 +229,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 	        // Prepare and log convergence data:
 	        for (Sandbox018D_LargerNetAnalysis testCase : testCases)
 	        {
-	        	testCase.finalState = testCase.states.get(testCase.states.size()-1);
+	        	testCase.finalState = testCase.states.get(testCase.K-1);
 	        }
 	        
 	        for(int k = 0; k < K; ++k)
@@ -511,16 +511,16 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7;
+                      INITIAL_H_AUG_SCALE = 6.6;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
                                     ETA_G = 4.2;
-                                    ETA_H = 0.0085;
+                                    ETA_H = 0.0076;
                                    
                                        XI = 0.2;
                                
-                                        K = 7000;//3000;
+                                        K = 10000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
@@ -538,19 +538,19 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
     	config();
                  
                       INITIAL_G_AUG_SCALE = 0.0127;
-                         G_AUG_SCALE_STEP = 1.001;
+                         G_AUG_SCALE_STEP = 1.0005;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7;
-                         H_AUG_SCALE_STEP = 1.001;
+                      INITIAL_H_AUG_SCALE = 6.1;
+                         H_AUG_SCALE_STEP = 1.0005;
                           H_MAX_AUG_SCALE = 1e6;
                
                                     ETA_G = 4.2;
-                                    ETA_H = 0.0085;
+                                    ETA_H = 0.0079;
                                    
                                        XI = 0.2;
                                
-                                        K = 8000;//3000;
+                                        K = 10000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
@@ -568,19 +568,19 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
     	config();
                  
                       INITIAL_G_AUG_SCALE = 0.0127;
-                         G_AUG_SCALE_STEP = 1.001;
+                         G_AUG_SCALE_STEP = 1.0005;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7;
-                         H_AUG_SCALE_STEP = 1.001;
+                      INITIAL_H_AUG_SCALE = 6.1;
+                         H_AUG_SCALE_STEP = 1.0005;
                           H_MAX_AUG_SCALE = 1e6;
                
                                     ETA_G = 4.2;
-                                    ETA_H = 0.0085;
+                                    ETA_H = 0.0079;
                                    
                                        XI = 0.2;
                                
-                                        K = 9000;//3000;
+                                        K = 12000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
@@ -819,7 +819,8 @@ if(k > 2900)
         switch (testNetwork)
 		{
         case _117BUS:
-        	addDG(110, 500e3, 100e3, 50e3);
+        	addDG(105, 500e3, 100e3, 50e3);
+        	addDG(112, 500e3, 100e3, 50e3);
         case _107BUS:
         	addDG(102, 500e3, 100e3, 50e3);
         	addDG(99, 500e3, 100e3, 50e3);
