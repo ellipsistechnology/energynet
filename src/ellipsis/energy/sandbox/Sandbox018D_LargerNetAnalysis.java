@@ -41,7 +41,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 	}
 	
 	public Network testNetwork = Network._117BUS;
-	public boolean convergenceAnalysis = true;
+	public boolean convergenceAnalysis = false;
 	
 	private int gConvergedIteration = -1;
 	private double gConvergeThreshold = 5e-1;
@@ -522,7 +522,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                                    
                                        XI = 0.2;
                                
-                                        K = 10000;
+                                        K = 11000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
@@ -552,7 +552,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                                    
                                        XI = 0.2;
                                
-                                        K = 12000;
+                                        K = 13000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
