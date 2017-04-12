@@ -203,6 +203,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 		{
 			// Set up all test cases to run concurrently:
 			List<Sandbox018D_LargerNetAnalysis> testCases = new ArrayList<Sandbox018D_LargerNetAnalysis>();
+			int maxK = 0;
 			for (Network net : Network.values()) 
 			{
 				Sandbox018D_LargerNetAnalysis testCase = new Sandbox018D_LargerNetAnalysis(net, true, out)
@@ -212,12 +213,13 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
 				};
 				testCase.init();
 				testCases.add(testCase);
+				maxK = Math.max(testCase.K, maxK);
 			}
 			
 			// Iterations:
 	        Random agentSelector = new Random(0);
 	        Timer timer = Timer.startNewTimer();
-	        for(int k = 0; k < 10000; ++k)
+	        for(int k = 0; k < maxK; ++k)
 	        {
 	        	for (Sandbox018D_LargerNetAnalysis testCase : testCases) 
 	        	{
@@ -550,7 +552,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                                    
                                        XI = 0.2;
                                
-                                        K = 10000;
+                                        K = 12000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
@@ -571,16 +573,16 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.0005;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 6.1;
+                      INITIAL_H_AUG_SCALE = 5.8;
                          H_AUG_SCALE_STEP = 1.0005;
                           H_MAX_AUG_SCALE = 1e6;
                
                                     ETA_G = 4.2;
-                                    ETA_H = 0.0079;
+                                    ETA_H = 0.0076;
                                    
                                        XI = 0.2;
                                
-                                        K = 12000;
+                                        K = 15000;
                                DEBUG_RATE = K / 1000;
               AGENT_SELECTION_PROBABILITY = 1.0;
              
