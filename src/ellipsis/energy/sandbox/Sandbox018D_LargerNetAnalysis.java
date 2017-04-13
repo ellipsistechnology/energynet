@@ -329,11 +329,11 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
     {
     	config();
                  
-                      INITIAL_G_AUG_SCALE = 0.0127;//0.0077;
+                      INITIAL_G_AUG_SCALE = 0.0077;
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7.0;//7.7;
+                      INITIAL_H_AUG_SCALE = 7.7;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
@@ -359,11 +359,11 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
     {
     	config();
                  
-                      INITIAL_G_AUG_SCALE = 0.0127;//0.0097;
+                      INITIAL_G_AUG_SCALE = 0.0097;
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7.0;//7.8;
+                      INITIAL_H_AUG_SCALE = 7.8;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
@@ -389,11 +389,11 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
     {
     	config();
                  
-                      INITIAL_G_AUG_SCALE = 0.0127;//0.0107;
+                      INITIAL_G_AUG_SCALE = 0.0107;
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7.0;//7.9;
+                      INITIAL_H_AUG_SCALE = 7.9;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
@@ -423,7 +423,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7.0;//8.2;
+                      INITIAL_H_AUG_SCALE = 8.2;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
@@ -453,7 +453,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7.0;//8.8;
+                      INITIAL_H_AUG_SCALE = 8.8;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
@@ -483,7 +483,7 @@ public class Sandbox018D_LargerNetAnalysis extends Sandbox018B
                          G_AUG_SCALE_STEP = 1.001;
                           G_MAX_AUG_SCALE = 1e6;
                       
-                      INITIAL_H_AUG_SCALE = 7.0;//7;
+                      INITIAL_H_AUG_SCALE = 7.0;
                          H_AUG_SCALE_STEP = 1.001;
                           H_MAX_AUG_SCALE = 1e6;
                
