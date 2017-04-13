@@ -2511,7 +2511,7 @@ if(debug)
     }
     
     /**
-     * @return Power mismatch error as a percentage of total DG output.
+     * @return Sum of power mismatch errors. //as a percentage of total DG output.
      */
     protected double consensusError()
     {
@@ -2526,8 +2526,9 @@ if(debug)
     	double error_q = sum(a -> Math.abs(a.hq-h_q), agents);
     	
     	// Error as a percentage of total DG power:
-    	Complex dgPower = totalDGPower();
-		Complex percentageError = new Complex(error_p/dgPower.getReal(), error_q/dgPower.getImaginary());
+//    	Complex dgPower = totalDGPower();
+//		Complex percentageError = new Complex(error_p/dgPower.getReal(), error_q/dgPower.getImaginary());
+		Complex percentageError = new Complex(error_p, error_q);
 		return percentageError.abs();
     }
 
